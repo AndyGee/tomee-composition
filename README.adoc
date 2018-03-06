@@ -1,0 +1,20 @@
+= tomee-composition
+
+TomEE plugin provisioning example, with hibernate, jcache and slf4j logging enabled
+
+----
+mvn clean package tomee:build
+
+./target/apache-tomee/bin/startup.sh
+----
+
+----
+./target/apache-tomee/bin/shutdown.sh
+----
+
+Also creates a ./target/TomEE-SLF4J.zip
+
+
+
+
+
