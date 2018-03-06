@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--global-->
+<Server port="${tomee-plugin.shutdown}" shutdown="SHUTDOWN">
+    <!-- TomEE plugin for Tomcat -->
+    <Listener className="org.apache.tomee.catalina.ServerListener"/>
+    <Listener className="org.apache.catalina.core.AprLifecycleListener"
+              SSLEngine="on"/>
+    <Listener className="org.apache.catalina.core.JasperListener"/>
+    <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
+    <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
+    <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+
+    <GlobalNamingResources>
+
+        <Resource name="UserDatabase" auth="Container"
+                  type="org.apache.catalina.UserDatabase" description="User database that can be updated and saved"
+                  factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+                  pathname="conf/tomcat-users.xml"/>
+    </GlobalNamingResources>
+
+
+    <Service>
+
+        <Connector port="${tomee-plugin.http}" maxHttpHeaderSize="32768"
+                   maxThreads="50" minSpareThreads="5" enableLookups="false"
+                   redirectPort="8443" acceptCount="25" connectionTimeout="20000"
+                   disableUploadTimeout="true"/>
+
+        <!-- <Connector port="8443" protocol="org.apache.coyote.http11.Http11Protocol"
+            maxThreads="150" SSLEnabled="true" scheme="https" secure="true" clientAuth="false"
+            sslProtocol="TLS" /> -->
+
+        <Connector port="${tomee-plugin.ajp}" enableLookups="false"
+                   redirectPort="8443" protocol="AJP/1.3" URIEncoding="UTF-8"
+                   connectionTimeout="600000"/>
+
+        <Engine name="Catalina" defaultHost="${default.host}">
+
+            <Valve className="ch.qos.logback.access.tomcat.LogbackValve" filename="conf/logback.xml"/>
+
+            <!-- <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"/> -->
+
+            <Realm className="org.apache.catalina.realm.LockOutRealm">
+                <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+                       resourceName="UserDatabase"/>
+
+
+            </Realm>
+
+            <Host name="${default.host}" appBase="webapps" unpackWARs="true" autoDeploy="true">
+
+                <!-- Access log processes all example. Documentation at: /docs/config/valve.html
+                    Note: The pattern used is equivalent to using pattern="common" -->
+                <Valve className="org.apache.catalina.valves.AccessLogValve"
+                       directory="logs" prefix="localhost_access" suffix=".log" renameOnRotate="true" fileDateFormat="-yyyy-MM-dd"
+                       pattern="%h %l %u %t &quot;%r&quot; %s %b %Fms"/>
+
+            </Host>
+        </Engine>
+    </Service>
+</Server>

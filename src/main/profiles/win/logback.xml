@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--win-->
+<configuration debug="true" scan="true" scanPeriod="10 seconds">
+
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+    <property name="LOG_HOME" value="${catalina.base}/logs"/>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <appender name="ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>${LOG_HOME}/all.log</file>
+        <append>true</append>
+
+        <encoder>
+            <Pattern>
+                ${logfile.format}
+            </Pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/all-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>${logfile.size}</maxFileSize>
+            <maxHistory>${logfile.history}</maxHistory>
+            <totalSizeCap>${logfile.limit}</totalSizeCap>
+        </rollingPolicy>
+
+    </appender>
+
+    <appender name="ALL-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>1000</queueSize>
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="ALL"/>
+    </appender>
+
+    <appender name="CATALINA" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>${LOG_HOME}/catalina.log</file>
+        <append>true</append>
+
+        <encoder>
+            <Pattern>
+                ${logfile.format}
+            </Pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/catalina-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>${logfile.size}</maxFileSize>
+            <maxHistory>${logfile.history}</maxHistory>
+            <totalSizeCap>${logfile.limit}</totalSizeCap>
+        </rollingPolicy>
+
+    </appender>
+
+    <!--Catch all-->
+    <root level="info">
+        <appender-ref ref="ALL-ASYNC"/>
+    </root>
+
+    <logger name="org.apache.coyote" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="org.apache.catalina" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="ch.qos.logback" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+
+    <!--Open EJB-->
+    <logger name="org.apache.openejb" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="OpenEJB" level="warn" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="OpenEJB.options" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="OpenEJB.server" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="OpenEJB.startup" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="OpenEJB.startup.service" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="OpenEJB.startup.config" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="OpenEJB.hsql" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="org.apache.activemq" level="debug" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="com.tomitribe" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+    <logger name="OpenEJB.rs" level="info" additivity="false">
+        <appender-ref ref="CATALINA"/>
+    </logger>
+
+    <!--Async-->
+    <logger name="org.apache.cxf.interceptor.LoggingInInterceptor" level="debug" additivity="false">
+        <appender-ref ref="ALL-ASYNC"/>
+    </logger>
+    <logger name="org.apache.cxf.interceptor.LoggingOutInterceptor" level="debug" additivity="false">
+        <appender-ref ref="ALL-ASYNC"/>
+    </logger>
+    <logger name="openjpa" level="info" additivity="false">
+        <appender-ref ref="ALL-ASYNC"/>
+    </logger>
+    <logger name="org.apache.deltaspike" level="info" additivity="false">
+        <appender-ref ref="ALL-ASYNC"/>
+    </logger>
+
+    <!-- use level trace to enable baan sql output -->
+    <!--Hibernate SQL logging, also requires hibernate.show_sql=true in persistence.xml-->
+    <!--<logger name="org.hibernate.SQL" level="debug" additivity="false">-->
+        <!--<appender-ref ref="ALL"/>-->
+    <!--</logger>-->
+    <!--<logger name="org.hibernate.type" level="trace" additivity="false">-->
+        <!--<appender-ref ref="ALL"/>-->
+    <!--</logger>-->
+
+</configuration>

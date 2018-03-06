@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--global-->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.14.4.xsd">
+
+    <!-- Allows us to use system properties as variables in this configuration file
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location">
+        <value>file:conf/spectrum.properties</value>
+      </property>
+      <property name="properties">
+        <props>
+          <prop key="conf.db.host">127.0.0.1:6464</prop>
+          <prop key="conf.db.un">postgres</prop>
+          <prop key="conf.db.pw">admin</prop>
+          <prop key="data.dir">data</prop>
+        </props>
+      </property>
+    </bean>
+    -->
+
+    <broker xmlns="http://activemq.apache.org/schema/core"
+            useJmx="true"
+            brokerName="tomee-broker"
+            useShutdownHook="false"
+            persistent="true"
+            start="false"
+            schedulerSupport="true"
+            enableStatistics="true"
+            offlineDurableSubscriberTimeout="259200000"
+            offlineDurableSubscriberTaskSchedule="3600000">
+
+        <systemUsage>
+            <systemUsage>
+                <memoryUsage>
+                    <memoryUsage percentOfJvmHeap="${amq.heap}"/>
+                </memoryUsage>
+            </systemUsage>
+        </systemUsage>
+
+        <!--<persistenceAdapter>-->
+            <!--&lt;!&ndash;Use the JDBC store defined below &ndash;&gt;-->
+            <!--<jdbcPersistenceAdapter createTablesOnStartup="false" dataSource="#oracle-activemq-ds" lockKeepAlivePeriod="5000">-->
+                <!--<statements>-->
+                    <!--<statements tablePrefix="${amq.db.prefix}"/>-->
+                <!--</statements>-->
+                <!--<locker>-->
+                    <!--<lease-database-locker lockAcquireSleepInterval="10000"/>-->
+                <!--</locker>-->
+            <!--</jdbcPersistenceAdapter>-->
+        <!--</persistenceAdapter>-->
+
+        <persistenceAdapter>
+          <kahaDB indexCacheSize="20000" ignoreMissingJournalfiles="true" checkForCorruptJournalFiles="true" checksumJournalFiles="true"/>
+        </persistenceAdapter>
+
+        <!-- The transport connectors ActiveMQ will listen to -->
+        <transportConnectors>
+            <!-- Remote transport to allow access from other machines -->
+            <transportConnector name="nio" enableStatusMonitor="true"
+                                uri="nio://0.0.0.0:${tomee.JMSPort}?soTimeout=60000&amp;daemon=true&amp;keepAlive=true&amp;connectionTimeout=120000&amp;wireFormat.tcpNoDelayEnabled=true&amp;wireFormat.maxInactivityDuration=120000&amp;wireFormat.maxInactivityDurationInitalDelay=120000"/>
+        </transportConnectors>
+
+        <managementContext>
+            <managementContext createConnector="false"/>
+        </managementContext>
+
+        <destinations>
+            <queue physicalName="ActiveMQ.DLQ"/>
+        </destinations>
+
+        <destinationPolicy>
+            <policyMap>
+                <policyEntries>
+
+                </policyEntries>
+            </policyMap>
+        </destinationPolicy>
+
+    </broker>
+
+</beans>

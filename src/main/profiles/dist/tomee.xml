@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--dist-->
+<tomee>
+    <!-- @formatter:off -->
+
+    <!--
+    # ==========================================================
+    # Default Bean-Managed Persistence EntityBean Container
+    # ==========================================================
+    -->
+    <Container id="Default BMP Container" type="BMP_ENTITY">
+
+        # Specifies the size of the bean pools for this
+        # bmp entity container.
+
+        PoolSize 100
+
+    </Container>
+
+
+    <!--
+    # ==========================================================
+    # Default Stateless SessionBean Container
+    # ==========================================================
+    -->
+    <Container id="Default Stateless Container" type="STATELESS">
+
+        # javax.ejb.AccessTimeout` annotation
+        AccessTimeout = 60 seconds
+
+        MaxSize = 300
+        MinSize = 10
+        StrictPooling = false
+        MaxAge = 24 hours
+        ReplaceAged = true
+        ReplaceFlushed = true
+        IdleTimeout = 30 minutes
+        GarbageCollection = false
+        SweepInterval = 5 minutes
+        CallbackThreads = 5
+        CloseTimeout = 5 minutes
+
+    </Container>
+
+    <!--
+    # ==========================================================
+    # Default Singleton SessionBean Container
+    # ==========================================================
+    -->
+    <Container id="Default Singleton Container" type="SINGLETON">
+
+        # Hi rate of access should increase this value
+        # Any usage of the `javax.ejb.AccessTimeout` annotation to override
+        AccessTimeout = 5 minutes
+
+    </Container>
+
+
+    <!--
+    # ==========================================================
+    # Default Stateful SessionBean Container
+    # ==========================================================
+    -->
+    <Container id="Default Stateful Container" type="STATEFUL">
+
+        AccessTimeout = 60 seconds
+
+        # - org.apache.openejb.core.stateful.RAFPassivater
+        # - org.apache.openejb.core.stateful.SimplePassivater
+        Passivator org.apache.openejb.core.stateful.SimplePassivater
+
+        # Use `javax.ejb.StatefulTimeout` annotation to override (minutes)
+        TimeOut 30
+        #Seconds
+        Frequency 120
+        Capacity 1000
+        BulkPassivate 50
+
+    </Container>
+
+    <!--
+    # ==========================================================
+    # Default Message Driven Container
+    # ==========================================================
+    -->
+    <Container id="Default MDB Container" type="MESSAGE">
+
+        # Specifies the maximum number of bean instances that are
+        # allowed to exist for each MDB deployment.
+
+        InstanceLimit 30
+
+    </Container>
+
+    <!--
+    # ================================================
+    # Default Transaction Manager implementation
+    # ================================================
+    -->
+    <TransactionManager id="Default Transaction Manager" type="TransactionManager">
+        defaultTransactionTimeoutSeconds 6000
+    </TransactionManager>
+
+    <!--
+    # ================================================
+    # Default JMS
+    # ================================================
+    -->
+    <Resource id="Default JMS Resource Adapter" type="ActiveMQResourceAdapter">
+
+        # This file must currently be relative to the working dir. See: https://issues.apache.org/jira/browse/TOMEE-1636
+        BrokerXmlConfig xbean:file:${amq.conf.path}
+
+        # Broker URL, local + failover
+        ServerUrl failover:(nio://${tomee.JMSHost}:${tomee.JMSPort},nio://${amq.failover.ip}:${amq.failover.port})?timeout=5000&amp;randomize=false&amp;priorityBackup=true&amp;backup=true&amp;nested.soTimeout=10000&amp;nested.daemon=true&amp;nested.keepAlive=true&amp;nested.connectionTimeout=30000&amp;nested.wireFormat.tcpNoDelayEnabled=true&amp;nested.wireFormat.maxInactivityDuration=1200000&amp;nested.wireFormat.maxInactivityDurationInitalDelay=1200000
+
+        # No DataSource, broker configured by activemq.xml
+        DataSource
+
+        # How long to wait for broker startup
+        StartupTimeout 30 seconds
+
+    </Resource>
+
+    <Resource id="Default JMS Connection Factory" type="javax.jms.ConnectionFactory">
+
+        ResourceAdapter Default JMS Resource Adapter
+
+        # allowed values: xa, local or none
+        TransactionSupport xa
+        PoolMaxSize 50
+        PoolMinSize 2
+        ConnectionMaxWaitTime 30 seconds
+    </Resource>
+
+    <!-- @formatter:on -->
+</tomee>

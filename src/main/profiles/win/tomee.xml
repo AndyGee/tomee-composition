@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--win-->
+<tomee>
+
+    <!--
+    # ==========================================================
+    # Default Bean-Managed Persistence EntityBean Container
+    # ==========================================================
+    -->
+    <Container id="Default BMP Container" type="BMP_ENTITY">
+
+        # Specifies the size of the bean pools for this
+        # bmp entity container.
+
+        PoolSize 100
+
+    </Container>
+
+
+    <!--
+    # ==========================================================
+    # Default Stateless SessionBean Container
+    # ==========================================================
+    -->
+    <Container id="Default Stateless Container" type="STATELESS">
+
+        # javax.ejb.AccessTimeout` annotation
+        AccessTimeout = 60 seconds
+
+        MaxSize = 300
+        MinSize = 10
+        StrictPooling = false
+        MaxAge = 24 hours
+        ReplaceAged = true
+        ReplaceFlushed = true
+        IdleTimeout = 30 minutes
+        GarbageCollection = false
+        SweepInterval = 5 minutes
+        CallbackThreads = 5
+        CloseTimeout = 5 minutes
+
+    </Container>
+
+    <!--
+    # ==========================================================
+    # Default Singleton SessionBean Container
+    # ==========================================================
+    -->
+    <Container id="Default Singleton Container" type="SINGLETON">
+
+        # Hi rate of access should increase this value
+        # Any usage of the `javax.ejb.AccessTimeout` annotation to override
+        AccessTimeout = 5 minutes
+
+    </Container>
+
+
+    <!--
+    # ==========================================================
+    # Default Stateful SessionBean Container
+    # ==========================================================
+    -->
+    <Container id="Default Stateful Container" type="STATEFUL">
+
+        AccessTimeout = 60 seconds
+
+        # - org.apache.openejb.core.stateful.RAFPassivater
+        # - org.apache.openejb.core.stateful.SimplePassivater
+        Passivator org.apache.openejb.core.stateful.SimplePassivater
+
+        # Use `javax.ejb.StatefulTimeout` annotation to override (minutes)
+        TimeOut 30
+        #Seconds
+        Frequency 120
+        Capacity 1000
+        BulkPassivate 50
+
+    </Container>
+
+    <!--
+    # ==========================================================
+    # Default Message Driven Container
+    # ==========================================================
+    -->
+    <Container id="Default MDB Container" type="MESSAGE">
+
+        # Specifies the maximum number of bean instances that are
+        # allowed to exist for each MDB deployment.
+
+        InstanceLimit 30
+
+    </Container>
+
+    <!--
+    # ================================================
+    # Default Transaction Manager implementation
+    # ================================================
+    -->
+    <TransactionManager id="Default Transaction Manager" type="TransactionManager">
+        defaultTransactionTimeoutSeconds 6000
+    </TransactionManager>
+
+    <!--
+    # ================================================
+    # Default JMS
+    # ================================================
+    -->
+    <Resource id="Default JMS Resource Adapter" type="ActiveMQResourceAdapter">
+
+        BrokerXmlConfig broker:(nio://${tomee.JMSHost}:${tomee.JMSPort})?useJmx=true
+        #BrokerXmlConfig xbean:file:../conf/activemq.xml
+
+        # Broker address
+        ServerUrl vm://${tomee.JMSHost}?waitForStart=30000&amp;async=true
+
+        # DataSource for persistent messages
+        DataSource Default Unmanaged JDBC Database
+
+        # How long to wait for broker startup
+        StartupTimeout 30 seconds
+
+    </Resource>
+
+    <Resource id="Default JMS Connection Factory" type="javax.jms.ConnectionFactory">
+
+        ResourceAdapter Default JMS Resource Adapter
+
+        # allowed values: xa, local or none
+        TransactionSupport xa
+        PoolMaxSize 50
+        PoolMinSize 2
+        ConnectionMaxWaitTime 30 seconds
+    </Resource>
+
+</tomee>
